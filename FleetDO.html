@@ -1769,7 +1769,7 @@ function CargoParamsTable({ fields }) {
 
   return x`
   <div style=${{border:'1px solid #e2e8f0',borderRadius:8,overflow:'hidden',background:'#fff',
-    display:'grid',gridTemplateColumns:'1fr 1px 130px'}}>
+    display:'grid',gridTemplateColumns:'fit-content(185px) 1px 1fr'}}>
     ${fields.map((f, i) => {
       const isLast = i === fields.length - 1;
       const bdr = isLast ? 'none' : '1px solid #e2e8f0';
@@ -1808,7 +1808,7 @@ function CargoParamsTable({ fields }) {
           padding:'3px 10px',fontSize:12,fontWeight:600,color:'#1852FE',display:'inline-flex',alignItems:'center'}}>${f.value}</span>`;
       }
       return [
-        x`<div key=${'l'+i} style=${{padding:'10px 14px',fontSize:13,fontWeight:600,color:'#475569',
+        x`<div key=${'l'+i} style=${{padding:'10px 14px',fontSize:13,fontWeight:400,color:'#64748B',
           borderBottom:bdr,display:'flex',alignItems:'center'}}>${f.label}</div>`,
         x`<div key=${'s'+i} style=${{background:'#e2e8f0',borderBottom:bdr}}></div>`,
         x`<div key=${'v'+i} style=${{padding:'8px 14px',borderBottom:bdr,display:'flex',alignItems:'center'}}>${control}</div>`,
@@ -2075,7 +2075,7 @@ function Q88Panel({ task }) {
                 x`<div key=${'l'+i}
                   onMouseEnter=${()=>setHoveredRow(i)} onMouseLeave=${()=>setHoveredRow(null)}
                   style=${{padding:'11px 14px',background:bg,transition:'background .12s',borderBottom:bb,display:'flex',alignItems:'center'}}>
-                  <span style=${{fontSize:13,color:'#334155',fontWeight:500,whiteSpace:'nowrap'}}>${row.question}</span>
+                  <span style=${{fontSize:13,color:'#64748B',fontWeight:400,whiteSpace:'nowrap'}}>${row.question}</span>
                 </div>`,
                 x`<div key=${'sep'+i}
                   onMouseEnter=${()=>setHoveredRow(i)} onMouseLeave=${()=>setHoveredRow(null)}
@@ -2146,7 +2146,7 @@ function Q88Panel({ task }) {
             ].map((qa,i) => x`
               <div key=${i} style=${{background:'#fff',border:'1px solid #e2e8f0',borderRadius:8,padding:'11px 14px'}}>
                 <div style=${{display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:8,marginBottom:6}}>
-                  <span style=${{fontSize:13,fontWeight:600,color:'#334155',lineHeight:1.4}}>${qa.q}</span>
+                  <span style=${{fontSize:13,fontWeight:400,color:'#64748B',lineHeight:1.4}}>${qa.q}</span>
                   <span style=${{flexShrink:0,fontSize:11,fontWeight:600,color:'#94a3b8',background:'#f1f5f9',
                     borderRadius:4,padding:'2px 7px',whiteSpace:'nowrap'}}>${qa.src}</span>
                 </div>
