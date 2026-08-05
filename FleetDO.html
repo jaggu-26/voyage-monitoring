@@ -1125,6 +1125,44 @@ const TASKS = [
       { question: 'Vetting Approval — Major Oil Company', file: 'Vetting_BP_2025.pdf', fileSize: '0.6 MB' },
     ],
   },
+  {
+    ...CP_TASK_BASE, id:5,
+    agent:'Tank Cleaning Agent', initials:'TC', avatarBg:'#ede9fe', avatarC:'#5b21b6',
+    status:'active', voyage:'20260514', date:'18 May 2026',
+    task:'Tank Cleaning Determination ready',
+    quickView: TANK_CLEANING_QUICK_VIEW,
+    hideQuickAccess: true,
+    summaryTabs: undefined,
+    operatorSummaryItems: undefined,
+    otherSummarySections: undefined,
+    attachments: [],
+    attachmentDocs: {},
+    noAttachment: true,
+    draftReadyLabel: 'Determination ready',
+    decision:{ approve:'Approve & Send', reject:'Reject & Revise' },
+    emailInput: {
+      from:'Ferreri Carlotta <tankers@affinitylp.com>',
+      to:'operations@geoserve.com',
+      subject:'Charts Load Orders — STI BROADWAY/SIROE — Voyage 20260514',
+      date:'18 May 2026, 09:42 UTC',
+      body: TANK_CLEANING_EMAIL_BODY,
+    },
+    actionDraft: {
+      to:'', cc:'operations@geoserve.com', from:'geoserve-agent@geoserve.com',
+      subject:'Tank Cleaning Instructions - NHII - Voyage 20260514',
+      confidence:'High',
+      confidenceDetail:'Cargo combination matched · Shell Guide applied · Procedures confirmed',
+      body:'Dear Captain,\n\nPlease find below tank cleaning recommendation for preparation of cargo tanks. Kindly revert with your comments if same will be carried out in line with our recommendation or with any changes.\n\nVessel: STI Broadway\nVoyage Ref: 20260514\nNext Cargo: LVN\n\nCombination 1 — Last Cargo: Gasoil/Gasoline → Next Cargo: LVN\nGuide Used: Shell\nCleaning Method: Well Drained\n\n1. Tank, pump columns and pipelines well drained — ROB must not exceed 0.05% of tank capacity.\n2. Any ROB to remain only in the pump well, where fitted.\n3. Pump columns, pipelines and drops cleared of all free-standing product.\n\nBest regards,\nGeoServe Operations',
+      bodyHtml:'<p>Dear Captain,</p>'
+        +'<p>Please find below tank cleaning recommendation for preparation of cargo tanks. Kindly revert with your comments if same will be carried out in line with our recommendation or with any changes.</p>'
+        +'<p><strong>Vessel:</strong> STI Broadway<br><strong>Voyage Ref:</strong> 20260514<br><strong>Next Cargo:</strong> LVN</p>'
+        +'<p><strong>Combination 1</strong> — Last Cargo: Gasoil/Gasoline → Next Cargo: LVN<br>Guide Used: Shell<br>Cleaning Method: Well Drained</p>'
+        +'<ol><li>Tank, pump columns and pipelines <strong>well drained</strong> — ROB must not exceed 0.05% of tank capacity.</li>'
+        +'<li>Any ROB to remain only in the <strong>pump well</strong>, where fitted.</li>'
+        +'<li>Pump columns, pipelines and drops cleared of all free-standing product.</li></ol>'
+        +'<p>Best regards,<br>GeoServe Operations</p>',
+    },
+  },
 ];
 
 const STATUS_META = {
