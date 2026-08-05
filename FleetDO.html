@@ -1315,7 +1315,7 @@ function FilterBtn({ statusFilter, setStatusFilter }) {
 
 /* ── Status filter dropdown: each option shows a color dot matching the operator card's border color ── */
 /* ── Generic dark-bar dropdown: portal panel so it never gets clipped by an overflow:hidden ancestor ── */
-function Dropdown({ value, onChange, options, style, placeholder }) {
+function Dropdown({ value, onChange, options, style, placeholder, chevronColor }) {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState(null);
   const btnRef = useRef(null);
@@ -1332,7 +1332,7 @@ function Dropdown({ value, onChange, options, style, placeholder }) {
       <button ref=${btnRef} onClick=${toggleOpen} style=${{...style,display:'flex',alignItems:'center',gap:7,position:'relative',textAlign:'left'}}>
         ${current.color ? x`<span style=${{width:8,height:8,borderRadius:'50%',background:current.color,flexShrink:0}}/>` : null}
         <span style=${{flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>${current ? current.label : placeholder}</span>
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style=${{flexShrink:0}}><polyline points="6 9 12 15 18 9"/></svg>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke=${chevronColor||"rgba(255,255,255,0.4)"} stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style=${{flexShrink:0}}><polyline points="6 9 12 15 18 9"/></svg>
       </button>
       ${open && pos ? createPortal(x`
         <${Fragment}>
@@ -1769,7 +1769,7 @@ function CargoParamsTable({ fields }) {
 
   return x`
   <div style=${{border:'1px solid #e2e8f0',borderRadius:8,overflow:'hidden',background:'#fff',
-    display:'grid',gridTemplateColumns:'fit-content(185px) 1px 1fr'}}>
+    display:'grid',gridTemplateColumns:'max-content 1px 1fr'}}>
     ${fields.map((f, i) => {
       const isLast = i === fields.length - 1;
       const bdr = isLast ? 'none' : '1px solid #e2e8f0';
@@ -1797,12 +1797,20 @@ function CargoParamsTable({ fields }) {
           style=${{border:'1px solid #CBD5E1',borderRadius:4,padding:'4px 8px',fontSize:13,
             width:120,fontFamily:'inherit',outline:'none',color:'#001E4C'}} placeholder="—"/>`;
       } else if (f.type === 'dropdown') {
-        control = x`<select value=${val} onChange=${e=>set(f.key, e.target.value)}
-          style=${{border:'1px solid #CBD5E1',borderRadius:4,padding:'4px 8px',fontSize:13,
-            fontFamily:'inherit',outline:'none',color:val?'#001E4C':'#94A3B8',background:'#fff',cursor:'pointer'}}>
-          <option value="" disabled>Select...</option>
-          ${f.options.map((o,oi) => x`<option key=${oi} value=${o}>${o}</option>`)}
-        </select>`;
+        const ddOpts = [{id:'', label:'Select…'}, ...f.options.map(o => ({id:o, label:o}))];
+        control = x`<${Dropdown}
+          value=${val||''}
+          onChange=${v => set(f.key, v)}
+          options=${ddOpts}
+          chevronColor="#64748B"
+          style=${{
+            height:32, minWidth:120, borderRadius:6,
+            border:'1px solid #CBD5E1', background:'#fff',
+            color: val ? '#001E4C' : '#94A3B8',
+            fontSize:13, fontWeight:400, fontFamily:'inherit',
+            padding:'0 8px', cursor:'pointer',
+          }}
+        />`;
       } else if (f.type === 'badge') {
         control = x`<span style=${{background:'#EEF6FF',border:'1px solid #BFDBFE',borderRadius:99,
           padding:'3px 10px',fontSize:12,fontWeight:600,color:'#1852FE',display:'inline-flex',alignItems:'center'}}>${f.value}</span>`;
