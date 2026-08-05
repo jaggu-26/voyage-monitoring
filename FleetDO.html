@@ -742,26 +742,23 @@ const TANK_CLEANING_QUICK_VIEW = [
     {label:'Next Cargo', value:'LVN'},
     {label:'Previous Cargo', value:'Gasoil / Gasoline'},
   ]},
-  { key:'guideLookup', label:'Guide Lookup & Procedures', num:1, items:[],
-    procedures:[
-      {
-        from:'Gasoil/Gasoline', to:'LVN', category:'Well Drained',
-        guides:[
-          { name:'Shell Guide', status:'match', points:[
-            'Tank, pump columns and pipelines <strong>well drained</strong> — ROB must not exceed 0.05% of tank capacity.',
-            'Any ROB to remain only in the <strong>pump well</strong>, where fitted.',
-            'Pump columns, pipelines and drops cleared of all free-standing product.',
-          ]},
-          { name:'HM50 Guide', status:'skipped', points:[
-            'Follow HM50 guide cleaning procedure for this cargo combination.',
-          ]},
-          { name:'BP Guide', status:'skipped', points:[
-            'Follow BP guide cleaning procedure for this cargo combination.',
-          ]},
-        ],
-      },
-    ],
-  },
+  { key:'cargoParams', type:'cargoParams', items:[], fields:[
+    {key:'sulphurPPM',               label:'Sulphur Content (ppm)',                       type:'number'},
+    {key:'isDyed',                   label:'Dyed Product',                                type:'toggle'},
+    {key:'isBOB',                    label:'Blendstock for Oxygenate Blending (BOB)',      type:'toggle'},
+    {key:'gradeUse',                 label:'Intended Use',                                type:'dropdown', options:['Chemical','Mogas','Other','Feedstock','Diesel Component']},
+    {key:'containsFAME',             label:'Contains FAME',                               type:'toggle'},
+    {key:'containsAlcohol',          label:'Contains Alcohol',                            type:'toggle'},
+    {key:'oxyFree',                  label:'Oxygenate Free',                              type:'toggle'},
+    {key:'fameFree',                 label:'FAME Free',                                   type:'toggle'},
+    {key:'aromaticsSulphurSensitive',label:'Aromatics / Sulphur Sensitive',               type:'toggle'},
+    {key:'mtbeNotPermitted',         label:'MTBE Not Permitted',                          type:'toggle'},
+    {key:'alcoholDirection',         label:'Alcohol Change Direction',                    type:'badge', value:'MeOH→EtOH'},
+    {key:'hasBuffer',                label:'Buffer Cargo Available',                      type:'toggle'},
+    {key:'hasIGS',                   label:'Inert Gas System (IGS) Available',            type:'toggle'},
+    {key:'isMPP',                    label:'Multi-Purpose Product (MPP) Vessel',          type:'toggle'},
+    {key:'coatingsGood',             label:'Tank Coatings in Good Condition',             type:'toggle'},
+  ]},
 ];
 
 /* ── Vessel Intelligence "Quick View" accordion data (Figma 7622:30486) — extracted from the Q88 questionnaire ── */
@@ -1757,37 +1754,81 @@ function RCard({ item }) {
   return null;
 }
 
-/* ── Guide Lookup & Procedures: single guide card + "Change Guide" dropdown + guide cascade (Figma 8046:1889426 / 8046:1889543) ── */
+/* ── Cargo Parameters table (Tank Cleaning reasoning panel) ── */
+function CargoParamsTable({ fields }) {
+  const initVals = {};
+  const defaultOn = new Set(['oxyFree','fameFree','coatingsGood','hasIGS','isMPP']);
+  fields.forEach(f => {
+    if (f.type === 'toggle') initVals[f.key] = defaultOn.has(f.key) ? 'yes' : null;
+    else if (f.type === 'number') initVals[f.key] = '';
+    else if (f.type === 'dropdown') initVals[f.key] = '';
+    else initVals[f.key] = f.value || '';
+  });
+  const [vals, setVals] = useState(initVals);
+  const set = (k, v) => setVals(prev => ({...prev, [k]: v}));
+
+  return x`
+  <div style=${{border:'1px solid #e2e8f0',borderRadius:8,overflow:'hidden',background:'#fff',
+    display:'grid',gridTemplateColumns:'1fr 1px 130px'}}>
+    ${fields.map((f, i) => {
+      const isLast = i === fields.length - 1;
+      const bdr = isLast ? 'none' : '1px solid #e2e8f0';
+      const val = vals[f.key];
+      let control;
+      if (f.type === 'toggle') {
+        const isOn = val === 'yes';
+        control = x`
+        <div onClick=${()=>set(f.key, isOn ? 'no' : 'yes')}
+          style=${{
+            display:'inline-flex', alignItems:'center', cursor:'pointer', userSelect:'none',
+            width:44, height:24, borderRadius:99, padding:2, boxSizing:'border-box',
+            background: isOn ? '#1852FE' : '#CBD5E1',
+            transition:'background 200ms ease', flexShrink:0,
+          }}>
+          <div style=${{
+            width:20, height:20, borderRadius:'50%', background:'#fff',
+            boxShadow:'0 1px 3px rgba(0,0,0,0.25)',
+            transform: isOn ? 'translateX(20px)' : 'translateX(0px)',
+            transition:'transform 200ms ease',
+          }}></div>
+        </div>`;
+      } else if (f.type === 'number') {
+        control = x`<input type="number" value=${val} onInput=${e=>set(f.key, e.target.value)}
+          style=${{border:'1px solid #CBD5E1',borderRadius:4,padding:'4px 8px',fontSize:13,
+            width:120,fontFamily:'inherit',outline:'none',color:'#001E4C'}} placeholder="—"/>`;
+      } else if (f.type === 'dropdown') {
+        control = x`<select value=${val} onChange=${e=>set(f.key, e.target.value)}
+          style=${{border:'1px solid #CBD5E1',borderRadius:4,padding:'4px 8px',fontSize:13,
+            fontFamily:'inherit',outline:'none',color:val?'#001E4C':'#94A3B8',background:'#fff',cursor:'pointer'}}>
+          <option value="" disabled>Select...</option>
+          ${f.options.map((o,oi) => x`<option key=${oi} value=${o}>${o}</option>`)}
+        </select>`;
+      } else if (f.type === 'badge') {
+        control = x`<span style=${{background:'#EEF6FF',border:'1px solid #BFDBFE',borderRadius:99,
+          padding:'3px 10px',fontSize:12,fontWeight:600,color:'#1852FE',display:'inline-flex',alignItems:'center'}}>${f.value}</span>`;
+      }
+      return [
+        x`<div key=${'l'+i} style=${{padding:'10px 14px',fontSize:13,fontWeight:600,color:'#475569',
+          borderBottom:bdr,display:'flex',alignItems:'center'}}>${f.label}</div>`,
+        x`<div key=${'s'+i} style=${{background:'#e2e8f0',borderBottom:bdr}}></div>`,
+        x`<div key=${'v'+i} style=${{padding:'8px 14px',borderBottom:bdr,display:'flex',alignItems:'center'}}>${control}</div>`,
+      ];
+    })}
+  </div>`;
+}
+
+/* ── Guide Lookup & Procedures: single guide card + guide cascade (Figma 8046:1889426 / 8046:1889543) ── */
 function GuideLookupCard({ label, proc }) {
   const guides = proc.guides || [];
   const matched = guides.find(g => g.status === 'match') || guides[0];
   const [activeName, setActiveName] = useState(matched ? matched.name : null);
-  const [ddOpen, setDdOpen] = useState(false);
-  const ddRef = useRef(null);
-  useEffect(() => {
-    if (!ddOpen) return;
-    const onDoc = e => { if (ddRef.current && !ddRef.current.contains(e.target)) setDdOpen(false); };
-    document.addEventListener('mousedown', onDoc);
-    return () => document.removeEventListener('mousedown', onDoc);
-  }, [ddOpen]);
   const active = guides.find(g => g.name === activeName) || matched;
   const isAutoSelected = active && matched && active.name === matched.name;
 
   return x`
   <div style=${{display:'flex',flexDirection:'column',gap:24,width:'100%'}}>
-    <div style=${{display:'flex',alignItems:'center',justifyContent:'space-between',gap:8,width:'100%'}}>
+    <div style=${{display:'flex',alignItems:'center',gap:8,width:'100%'}}>
       <div style=${{fontSize:18,lineHeight:'24px',fontWeight:600,color:'#000'}}>${label}</div>
-      <div ref=${ddRef} style=${{position:'relative',flexShrink:0}}>
-        <button onClick=${()=>setDdOpen(o=>!o)} style=${{background:'#EDF5FF',border:'1px solid #1852FE',borderRadius:4,height:32,display:'flex',alignItems:'center',gap:4,padding:'4px 8px 4px 12px',cursor:'pointer'}}>
-          <span style=${{fontSize:14,lineHeight:'20px',fontWeight:600,color:'#1852FE',whiteSpace:'nowrap'}}>Change Guide</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1852FE" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style=${{transform:ddOpen?'rotate(180deg)':'rotate(0deg)',transition:'transform 150ms'}}><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        ${ddOpen ? x`
-        <div style=${{position:'absolute',top:'calc(100% + 4px)',right:0,minWidth:180,background:'#fff',border:'1px solid #e2e8f0',borderRadius:4,boxShadow:'0px 4px 16px 0px rgba(0,0,0,0.16)',padding:8,display:'flex',flexDirection:'column',gap:2,zIndex:20}}>
-          ${guides.map((g,i) => x`
-            <button key=${i} onClick=${()=>{setActiveName(g.name); setDdOpen(false);}} style=${{background:g.name===activeName?'#EEF6FF':'#fff',border:'none',borderRadius:4,minHeight:40,padding:'8px 12px',display:'flex',alignItems:'center',cursor:'pointer',textAlign:'left',fontSize:14,lineHeight:'20px',fontWeight:500,color:'#000'}}>${g.name}</button>`)}
-        </div>` : null}
-      </div>
     </div>
     <div style=${{background:'#fff',border:'1px solid #E2E8F0',borderRadius:8,padding:12,display:'flex',flexDirection:'column',gap:24,width:'100%',boxSizing:'border-box'}}>
       <div style=${{display:'flex',gap:8,alignItems:'center',width:'100%'}}>
@@ -2625,6 +2666,13 @@ function ReasoningPanelRich({ task, expanded, onDraftChange }) {
                     Add more document
                   </button>
                 </div>
+              </div>`;
+            }
+            if (s.type === 'cargoParams') {
+              return x`
+              <div key=${s.key} id=${'gx-qv-section-'+s.key} style=${{width:'100%',display:'flex',flexDirection:'column',gap:12}}>
+                <div style=${{fontSize:18,lineHeight:'24px',fontWeight:600,color:'#000'}}>Guide Lookup & Procedures</div>
+                <${CargoParamsTable} fields=${s.fields}/>
               </div>`;
             }
             if (s.procedures) {
