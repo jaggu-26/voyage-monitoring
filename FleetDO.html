@@ -288,6 +288,40 @@
     .gx-ql-editor-host .ql-editor p{margin-bottom:8px}
     .gx-ql-editor-host .ql-editor p:has(strong){margin-top:16px}
     .gx-ql-editor-host .ql-editor.ql-blank::before{color:#94a3b8;font-style:normal;left:20px}
+
+    /* ── Confirm Modal (design-system: panels/modal) ── */
+    .gx-modal-overlay{position:fixed;inset:0;z-index:1100;background:rgba(3,7,18,.5);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;padding:16px;animation:gx-modal-fade 150ms ease}
+    .gx-modal{background:#fff;border-radius:10px;box-shadow:0 24px 64px rgba(0,0,0,.2);width:100%;max-width:400px;max-height:calc(100vh - 64px);display:flex;flex-direction:column;outline:none;overflow:hidden;animation:gx-modal-up 200ms ease}
+    .gx-modal__confirm-header{display:flex;justify-content:flex-end;padding:16px 16px 0;flex-shrink:0}
+    .gx-modal__close{background:none;border:none;cursor:pointer;color:#94a3b8;display:inline-flex;padding:4px;border-radius:4px}
+    .gx-modal__close:hover{background:#f1f5f9;color:#334155}
+    .gx-modal__confirm-body{display:flex;flex-direction:column;align-items:center;gap:16px;padding:0 24px 24px;overflow-y:auto;flex:1}
+    .gx-modal__illustration{width:150px;height:150px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+    .gx-modal__confirm-text{display:flex;flex-direction:column;gap:12px;width:100%;text-align:center}
+    .gx-modal__confirm-title{font-size:20px;font-weight:700;line-height:24px;color:#001E4C;text-align:center;margin:0}
+    .gx-modal__confirm-desc{font-size:14px;font-weight:400;line-height:20px;color:#475569;text-align:center;margin:0}
+    .gx-modal__confirm-footer{display:flex;flex-direction:row;gap:16px;padding:16px;flex-shrink:0}
+    .gx-modal__confirm-btn{flex:1 1 0;height:40px;border-radius:4px;border:none;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;line-height:20px;text-align:center;transition:background 120ms ease}
+    .gx-modal__confirm-btn--cancel{background:#edf5ff;border:1px solid #1852FE;color:#1852FE}
+    .gx-modal__confirm-btn--cancel:hover{background:#dbeafe}
+    .gx-modal__confirm-btn--danger{background:#dc2626;color:#fff}
+    .gx-modal__confirm-btn--danger:hover{background:#b91c1c}
+    @keyframes gx-modal-fade{from{opacity:0}to{opacity:1}}
+    @keyframes gx-modal-up{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+
+    /* ── Slideout (design-system: panels/slideout) ── */
+    .gx-slideout-overlay{position:fixed;inset:0;z-index:900;background:rgba(3,7,18,.4);backdrop-filter:blur(1px);animation:gx-slideout-fade 150ms ease}
+    .gx-slideout{position:fixed;top:0;bottom:0;right:0;z-index:901;width:var(--slideout-width,520px);max-width:calc(100vw - 32px);background:#fff;display:flex;flex-direction:column;box-shadow:-4px 0 32px rgba(0,0,0,.14);outline:none;border-left:1px solid #e2e8f0;transform:translateX(100%);transition:transform 250ms cubic-bezier(.4,0,.2,1)}
+    .gx-slideout--open{transform:translateX(0)}
+    .gx-slideout__header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #e2e8f0;flex-shrink:0;gap:12px}
+    .gx-slideout__title{font-size:14px;font-weight:700;color:#001E4C;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0}
+    .gx-slideout__close{background:none;border:none;cursor:pointer;color:#94a3b8;display:inline-flex;padding:5px;border-radius:6px;flex-shrink:0}
+    .gx-slideout__close:hover{background:#f1f5f9;color:#334155}
+    .gx-slideout__body{flex:1;overflow:hidden;display:flex;flex-direction:column}
+    .gx-slideout__toolbar{display:flex;align-items:center;gap:10px;padding:8px 16px;border-bottom:1px solid #e2e8f0;background:#f8fafc;flex-shrink:0}
+    .gx-slideout__doc{flex:1;overflow-y:auto;background:#e5e7eb;display:flex;flex-direction:column;align-items:center;padding:20px 0;gap:16px}
+    .gx-slideout__page{background:#fff;width:460px;min-height:640px;box-shadow:0 2px 12px rgba(0,0,0,.12);border-radius:2px;padding:48px 52px;display:flex;flex-direction:column;gap:14px}
+    @keyframes gx-slideout-fade{from{opacity:0}to{opacity:1}}
   </style>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css">
 </head>
@@ -910,6 +944,90 @@ const VOYAGE_MONITORING_QUICK_VIEW_COMPLETED = [
   ]},
 ];
 
+/* ── Vessel Intelligence Agent — shared base (Q88 / pre-fixture) ── */
+const STIB_TASK_BASE = {
+  vessel:'stib', vesselName:'STI Broadway', richInput:true,
+  agent:'Vessel Intelligence Agent', initials:'VI', avatarBg:'#e0f2fe', avatarC:'#075985',
+  status:'pending', voyage:'20260514', date:'18 May 2026',
+  draftReadyLabel:'Draft ready using Q88',
+  attachments:[], attachmentDocs:{}, noAttachment:true,
+  decision:{approve:'Approve & Send', reject:'Reject & Revise'},
+  reasoningCards:[
+    { n:1, title:'LOAD ORDER PARSED', badge:'Confirmed', btype:'success',
+      content:[{type:'single', header:'CHARTS LOAD ORDERS – STI BROADWAY/SIROE', meta:'Load port: Skikda, Algeria · Product: Gasoline 87 Octane · Voyage 20260514 · Source: Affinity Tankers Ltd'}] },
+  ],
+  emailInput:{
+    from:'Ferreri Carlotta <tankers@affinitylp.com>',
+    to:'operations@geoserve.com',
+    subject:'Charts Load Orders — STI BROADWAY/SIROE — Voyage 20260514',
+    date:'18 May 2026, 09:42 UTC',
+    body: TANK_CLEANING_EMAIL_BODY,
+  },
+  actionDraft:{
+    to:'',
+    cc:'operations@geoserve.com',
+    from:'geoserve-agent@geoserve.com',
+    subject:'RE: Pre-fixture Questionnaire (Q88) — STI Broadway — Voyage 20260514',
+    confidence:'Medium',
+    confidenceDetail:'Q88 data extracted · Questionnaire pre-filled from vessel records',
+    body:'Good day Captain,\n\nPlease review the pre-filled questionnaire below. The responses have been prepared using the vessel\'s Q88 information.\n\nKindly verify the details, update any incorrect or missing information, and reply with the corrected responses.\n\nGeneral Information\n\nVessel Name: MV Scorpio\nIMO Number: 9876543\nCall Sign: V7SC9\nFlag: Marshall Islands\nVessel Type: MR Product Tanker\nBuilt Year: 2018\nBuilder: Hyundai Mipo Dockyard\nClassification Society: DNV\nOwner: Scorpio Tankers Inc.\nOperator: Scorpio Ship Management\n\nPrincipal Particulars\n\nDeadweight (DWT): 49,999 MT\nGross Tonnage: 29,850 GT\nLength Overall: 183.0 m\nBeam: 32.2 m\nSummer Draft: 13.0 m\n\nCargo Information\n\nCargo Tank Capacity: 54,800 m³\nNumber of Cargo Tanks: 12\nCargo Pump Type: Deepwell\nNumber of Cargo Pumps: 12\nCargo Heating: Yes\nHeating Medium: Thermal Oil\nMaximum Cargo Temperature: 80°C\nCargo Tank Coating: Epoxy\n\nIf any of the above information is incorrect, outdated, or unavailable, please update the relevant fields before replying.\n\nThank you.\nBest regards,\nGeoServe Operations',
+    bodyHtml:'<p>Good day Captain,</p>'
+      +'<p>Please review the pre-filled questionnaire below. The responses have been prepared using the vessel\'s Q88 information.</p>'
+      +'<p>Kindly verify the details, update any incorrect or missing information, and reply with the corrected responses.</p>'
+      +'<p><strong>General Information</strong></p>'
+      +'<p>Vessel Name: MV Scorpio<br>IMO Number: 9876543<br>Call Sign: V7SC9<br>Flag: Marshall Islands<br>Vessel Type: MR Product Tanker<br>Built Year: 2018<br>Builder: Hyundai Mipo Dockyard<br>Classification Society: DNV<br>Owner: Scorpio Tankers Inc.<br>Operator: Scorpio Ship Management</p>'
+      +'<p><strong>Principal Particulars</strong></p>'
+      +'<p>Deadweight (DWT): 49,999 MT<br>Gross Tonnage: 29,850 GT<br>Length Overall: 183.0 m<br>Beam: 32.2 m<br>Summer Draft: 13.0 m</p>'
+      +'<p><strong>Cargo Information</strong></p>'
+      +'<p>Cargo Tank Capacity: 54,800 m³<br>Number of Cargo Tanks: 12<br>Cargo Pump Type: Deepwell<br>Number of Cargo Pumps: 12<br>Cargo Heating: Yes<br>Heating Medium: Thermal Oil<br>Maximum Cargo Temperature: 80°C<br>Cargo Tank Coating: Epoxy</p>'
+      +'<p>If any of the above information is incorrect, outdated, or unavailable, please update the relevant fields before replying.</p>'
+      +'<p>Thank you.<br>Best regards,<br>GeoServe Operations</p>',
+  },
+};
+
+/* ── CP & VO Agent — shared base ── */
+const CP_TASK_BASE = {
+  vessel:'nhii', vesselName:'Nova Horizon II', richInput:true,
+  agent:'CP & VO Agent', initials:'CP', avatarBg:'#e0e7ff', avatarC:'#3730a3',
+  status:'pending', voyage:'20260514', date:'18 May 2026',
+  reasoningCards:[
+    { n:1, title:'LOAD ORDER PARSED', badge:'Confirmed', btype:'success',
+      content:[{type:'single', header:'CHARTS LOAD ORDERS – STI BROADWAY/SIROE', meta:'Load port: Skikda, Algeria · Product: Gasoline 87 Octane · Voyage 20260514 · Source: Affinity Tankers Ltd'}] },
+  ],
+  decision:{ approve:'Approve & Send', reject:'Reject & Revise' },
+  attachments:['Charterparty_NH-20May','Addendum_NH-20May'],
+  attachmentDocs:{
+    'Charterparty_NH-20May':{ pages:CP_PAGES, bg:'#fff' },
+    'Addendum_NH-20May':{ pages:ADDENDUM_PAGES, bg:'#fff' },
+  },
+  summaryTabs:['Master Summary','Operator Summary','Other Summary'],
+  operatorSummaryItems: OPERATOR_SUMMARY_ITEMS,
+  otherSummarySections: OTHER_SUMMARY_SECTIONS,
+  noAttachment: true,
+  draftReadyLabel:'Draft Ready',
+  emailInput:{
+    from:'Ferreri Carlotta <tankers@affinitylp.com>',
+    to:'operations@geoserve.com',
+    subject:'Charts Load Orders — STI BROADWAY/SIROE — Voyage 20260514',
+    date:'18 May 2026, 09:42 UTC',
+    body: TANK_CLEANING_EMAIL_BODY,
+  },
+  actionDraft:{
+    to:'',
+    cc:'operations@geoserve.com',
+    from:'operations@geoserves.com',
+    subject:'Master Fixture Instructions',
+    confidence:'Medium',
+    confidenceDetail:'Load order parsed · Stowplan preparation pending master confirmation',
+    body:'Dear Captain,\n\nPlease find below the fixture CP instructions for the upcoming voyage.\n\nVessel: Nova Horizon II\nVoyage Ref: 20260514\nCharterer: Shell Trading Pvt. Ltd.\nLoad Port: Skikda, Algeria\nDischarge Port: Rotterdam, Netherlands\nLaycan: 18.05.2026 00:01 to 19.05.2026 23:59\nCargo: Gasoline 87 Octane — 48,000 MT +/-10% MOLOO\n\nPlease acknowledge receipt and confirm vessel readiness.\n\nBest regards,\nGeoServe Operations',
+    bodyHtml:'<p>Dear Captain,</p>'
+      +'<p>Please find below the fixture CP instructions for the upcoming voyage.</p>'
+      +'<p><strong>Vessel:</strong> Nova Horizon II<br><strong>Voyage Ref:</strong> 20260514<br><strong>Charterer:</strong> Shell Trading Pvt. Ltd.<br><strong>Load Port:</strong> Skikda, Algeria<br><strong>Discharge Port:</strong> Rotterdam, Netherlands<br><strong>Laycan:</strong> 18.05.2026 00:01 to 19.05.2026 23:59<br><strong>Cargo:</strong> Gasoline 87 Octane — 48,000 MT +/-10% MOLOO</p>'
+      +'<p>Please acknowledge receipt and confirm vessel readiness.</p>'
+      +'<p>Best regards,<br>GeoServe Operations</p>',
+  },
+};
+
 /* ── Voyage Monitoring Agent — shared base (no attachments, no CP/Q88 tabs) ── */
 const VOYAGE_TASK_BASE = {
   vessel:'nhii', vesselName:'Nova Horizon II', richInput:true,
@@ -991,6 +1109,21 @@ const TASKS = [
       confidenceDetail:'ETB/ETC/ETD confirmed by Port Agent · No conflict with Master ETA',
       body:'Dear Captain,\n\nRotterdam Port Agency has confirmed the berth schedule below:\n\n  ETB: 05 Aug 2026, 06:00 LT\n  ETC: 06 Aug 2026, 18:00 LT\n  ETD: 06 Aug 2026, 20:00 LT\n\nThe fleet position list has been updated accordingly, and the downstream port ETAs have been recalculated to reflect this schedule.\n\nBest regards,\nGeoServe Operations',
     },
+  },
+  {
+    ...STIB_TASK_BASE, id:4,
+    task:'Pre-fixture Questionnaire (Q88)',
+    quickView: QUICK_VIEW_SECTIONS,
+    quickViewType: 'q88',
+    q88Attachments: [
+      { question: 'Classification Society Certificate', file: 'DNV_Class_Certificate_STI_Broadway.pdf', fileSize: '1.8 MB' },
+      { question: 'IOPP Certificate', file: 'IOPP_Certificate_2026.pdf', fileSize: '0.9 MB' },
+      { question: 'Safety Management Certificate (SMC)', file: null },
+      { question: 'ISPS Compliance Certificate', file: null },
+      { question: 'Last SIRE Inspection Report', file: 'SIRE_Report_Jan2026.pdf', fileSize: '3.2 MB' },
+      { question: 'P&I Club Certificate', file: null },
+      { question: 'Vetting Approval — Major Oil Company', file: 'Vetting_BP_2025.pdf', fileSize: '0.6 MB' },
+    ],
   },
 ];
 
@@ -1816,6 +1949,378 @@ function QVItem({ sectionKey, index, item, state, onToggleExclude, onOpenEdit, f
     </div>`;
 }
 
+/* ── Q88 Reasoning Panel ── */
+function Q88Panel({ task }) {
+  const [hoveredRow, setHoveredRow] = useState(null);
+  const [uploadModal, setUploadModal] = useState(null);
+  const [dragging, setDragging] = useState(false);
+  const [uploadFile, setUploadFile] = useState(null);
+  const [uploadReason, setUploadReason] = useState('');
+  const [openSections, setOpenSections] = useState(() => new Set(QUICK_VIEW_SECTIONS.map(s => s.key)));
+  const [docSlideout, setDocSlideout] = useState(null); // { file, question }
+  const [deleteModal, setDeleteModal] = useState(null); // { file, question }
+
+  const attachments = task.q88Attachments || [];
+
+  const openUpload = row => { setUploadModal(row); setUploadFile(null); setUploadReason(''); };
+  const closeUpload = () => setUploadModal(null);
+
+  const toggleSec = key => setOpenSections(prev => {
+    const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n;
+  });
+
+  return x`
+    <div style=${{flex:1,display:'flex',flexDirection:'column',overflow:'hidden',minWidth:0,position:'relative'}}>
+
+      <!-- Header -->
+      <div style=${{flexShrink:0,padding:'11px 18px 0 18px',display:'flex',alignItems:'center',gap:6}}>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#5a6b85" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span style=${{fontWeight:700,fontSize:13,color:'#001E4C',letterSpacing:.01}}>Reasoning</span>
+        <span style=${{marginLeft:'auto',background:'#FEF9C3',color:'#854D0E',fontSize:11.5,fontWeight:700,padding:'2px 9px',borderRadius:20,letterSpacing:.02}}>Action Required</span>
+      </div>
+
+      <!-- Content: flat scroll — Attachments then Q & A -->
+      <div class="scroll" style=${{flex:1,overflowY:'auto',padding:'14px 16px',display:'flex',flexDirection:'column',gap:16}}>
+
+        <!-- Section: Attachments -->
+        <div>
+          <div style=${{fontSize:11,fontWeight:700,color:'#94a3b8',letterSpacing:.08,textTransform:'uppercase',marginBottom:8,paddingLeft:2}}>Attachments</div>
+          <div style=${{border:'1px solid #e2e8f0',borderRadius:8,overflow:'hidden',background:'#fff',
+            display:'grid',gridTemplateColumns:'max-content 1px 1fr'}}>
+            ${attachments.map((row,i) => {
+              const bb = i<attachments.length-1?'1px solid #f1f5f9':'none';
+              const bg = hoveredRow===i?'#f8fafc':'#fff';
+              return [
+                x`<div key=${'l'+i}
+                  onMouseEnter=${()=>setHoveredRow(i)} onMouseLeave=${()=>setHoveredRow(null)}
+                  style=${{padding:'11px 14px',background:bg,transition:'background .12s',borderBottom:bb,display:'flex',alignItems:'center'}}>
+                  <span style=${{fontSize:13,color:'#334155',fontWeight:500,whiteSpace:'nowrap'}}>${row.question}</span>
+                </div>`,
+                x`<div key=${'sep'+i}
+                  onMouseEnter=${()=>setHoveredRow(i)} onMouseLeave=${()=>setHoveredRow(null)}
+                  style=${{background:'#e2e8f0',borderBottom:bb}}></div>`,
+                x`<div key=${'r'+i}
+                  onMouseEnter=${()=>setHoveredRow(i)} onMouseLeave=${()=>setHoveredRow(null)}
+                  style=${{padding:'11px 14px',background:bg,transition:'background .12s',borderBottom:bb,
+                    display:'flex',alignItems:'center',minWidth:0,position:'relative'}}>
+                  ${row.file ? x`
+                    <span style=${{fontSize:13,color:'#1852FE',cursor:'pointer',fontWeight:600,
+                      overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',
+                      maxWidth:'100%',paddingRight:130}}
+                      onClick=${()=>setDocSlideout({file:row.file,question:row.question})}>${row.file}</span>
+                    <div style=${{position:'absolute',right:14,top:'50%',transform:'translateY(-50%)',
+                      display:'flex',gap:6,opacity:hoveredRow===i?1:0,pointerEvents:hoveredRow===i?'auto':'none',transition:'opacity .15s'}}>
+                      <button onClick=${()=>openUpload(row)} style=${{display:'flex',alignItems:'center',gap:3,background:'#f1f5f9',border:'none',
+                        borderRadius:6,padding:'3px 8px',fontSize:12,color:'#334155',cursor:'pointer',fontFamily:'inherit',fontWeight:500}}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                        Edit
+                      </button>
+                      <button onClick=${()=>setDeleteModal(row)} style=${{display:'flex',alignItems:'center',gap:3,background:'#fff1f2',border:'none',
+                        borderRadius:6,padding:'3px 8px',fontSize:12,color:'#be123c',cursor:'pointer',fontFamily:'inherit',fontWeight:500}}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
+                          <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+                        </svg>
+                        Delete
+                      </button>
+                    </div>
+                  ` : x`
+                    <span style=${{fontSize:13,color:'#94a3b8'}}>—</span>
+                    <div style=${{position:'absolute',right:14,top:'50%',transform:'translateY(-50%)'}}>
+                      <button onClick=${()=>openUpload(row)} style=${{display:'flex',alignItems:'center',gap:5,
+                        background:'none',border:'1.5px solid #1852FE',borderRadius:6,padding:'3px 13px',
+                        fontSize:12.5,color:'#1852FE',cursor:'pointer',fontFamily:'inherit',fontWeight:600}}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                          <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        Upload
+                      </button>
+                    </div>
+                  `}
+                </div>`,
+              ];
+            })}
+          </div>
+        </div>
+
+        <!-- Section: Q & A -->
+        <div>
+          <div style=${{fontSize:11,fontWeight:700,color:'#94a3b8',letterSpacing:.08,textTransform:'uppercase',marginBottom:8,paddingLeft:2}}>Q & A</div>
+          <div style=${{display:'flex',flexDirection:'column',gap:8}}>
+            ${[
+              { q:'What is the vessel name?',            a:'STI Broadway',              src:'Load Order' },
+              { q:'What is the voyage number?',          a:'20260514',                  src:'Load Order' },
+              { q:'What is the load port?',              a:'Skikda, Algeria',           src:'Load Order' },
+              { q:'What cargo type is being loaded?',    a:'Gasoline 87 Octane',        src:'Load Order' },
+              { q:'Who is the charterer?',               a:'Affinity Tankers Ltd',      src:'Load Order' },
+              { q:'What is the vessel IMO number?',      a:'9876543',                   src:'Vessel Record' },
+              { q:'What is the vessel flag state?',      a:'Not confirmed',             src:'Vessel Record', warn:true },
+              { q:'What is the vessel type?',            a:'MR Product Tanker',         src:'Vessel Record' },
+              { q:'What is the classification society?', a:'DNV',                       src:'Class Certificate' },
+              { q:'When was the last SIRE inspection?',  a:'12 Jan 2026',               src:'SIRE Report' },
+            ].map((qa,i) => x`
+              <div key=${i} style=${{background:'#fff',border:'1px solid #e2e8f0',borderRadius:8,padding:'11px 14px'}}>
+                <div style=${{display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:8,marginBottom:6}}>
+                  <span style=${{fontSize:13,fontWeight:600,color:'#334155',lineHeight:1.4}}>${qa.q}</span>
+                  <span style=${{flexShrink:0,fontSize:11,fontWeight:600,color:'#94a3b8',background:'#f1f5f9',
+                    borderRadius:4,padding:'2px 7px',whiteSpace:'nowrap'}}>${qa.src}</span>
+                </div>
+                <div style=${{display:'flex',alignItems:'center',gap:6}}>
+                  ${qa.warn ? x`
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                      <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                  ` : null}
+                  <span style=${{fontSize:13,fontWeight:500,color:qa.warn?'#ea580c':'#001E4C'}}>${qa.a}</span>
+                </div>
+              </div>
+            `)}
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Delete confirm modal -->
+      ${deleteModal ? x`
+        <div class="gx-modal-overlay" onClick=${()=>setDeleteModal(null)}>
+          <div class="gx-modal" onClick=${e=>e.stopPropagation()} role="dialog" aria-modal="true">
+            <div class="gx-modal__confirm-header">
+              <button class="gx-modal__close" onClick=${()=>setDeleteModal(null)} aria-label="Close">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                  <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+            <div class="gx-modal__confirm-body">
+              <div class="gx-modal__illustration">
+                <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="50" cy="50" r="50" fill="#FFF1F2"/>
+                  <rect x="28" y="38" width="44" height="36" rx="4" fill="#FECDD3"/>
+                  <rect x="36" y="30" width="28" height="10" rx="3" fill="#FCA5A5"/>
+                  <rect x="32" y="36" width="36" height="4" rx="2" fill="#F87171"/>
+                  <rect x="43" y="46" width="4" height="16" rx="2" fill="#DC2626"/>
+                  <rect x="53" y="46" width="4" height="16" rx="2" fill="#DC2626"/>
+                  <rect x="44" y="28" width="12" height="4" rx="2" fill="#EF4444"/>
+                </svg>
+              </div>
+              <div class="gx-modal__confirm-text">
+                <h2 class="gx-modal__confirm-title">Delete Attachment?</h2>
+                <p class="gx-modal__confirm-desc">
+                  <strong>${deleteModal.file}</strong> will be permanently removed from <em>${deleteModal.question}</em>. This action cannot be undone.
+                </p>
+              </div>
+            </div>
+            <div class="gx-modal__confirm-footer">
+              <button class="gx-modal__confirm-btn gx-modal__confirm-btn--cancel" onClick=${()=>setDeleteModal(null)}>Cancel</button>
+              <button class="gx-modal__confirm-btn gx-modal__confirm-btn--danger" onClick=${()=>setDeleteModal(null)}>Delete</button>
+            </div>
+          </div>
+        </div>
+      ` : null}
+
+      <!-- Document slide-out -->
+      ${docSlideout ? x`
+        <div class="gx-slideout-overlay" onClick=${()=>setDocSlideout(null)}></div>
+        <div class=${'gx-slideout gx-slideout--open'} style=${{ '--slideout-width':'560px' }}>
+          <div class="gx-slideout__header">
+            <div style=${{display:'flex',alignItems:'center',gap:10,minWidth:0}}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style=${{flexShrink:0}}>
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10 9 9 9 8 9"/>
+              </svg>
+              <h2 class="gx-slideout__title">${docSlideout.file}</h2>
+            </div>
+            <button class="gx-slideout__close" onClick=${()=>setDocSlideout(null)}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+          <div class="gx-slideout__body">
+            <!-- Toolbar -->
+            <div class="gx-slideout__toolbar">
+              <span style=${{fontSize:12,color:'#5a6b85',fontWeight:500}}>Source:</span>
+              <span style=${{fontSize:12,color:'#334155',fontWeight:600}}>${docSlideout.question}</span>
+              <div style=${{flex:1}}></div>
+              <div style=${{display:'flex',alignItems:'center',gap:6,background:'#fff',border:'1px solid #e2e8f0',borderRadius:6,padding:'3px 10px'}}>
+                <button style=${{background:'none',border:'none',cursor:'pointer',color:'#5a6b85',padding:'0 2px',display:'flex',alignItems:'center',fontFamily:'inherit',fontSize:13,fontWeight:600}}>‹</button>
+                <span style=${{fontSize:12,color:'#334155',minWidth:48,textAlign:'center'}}>1 / 1</span>
+                <button style=${{background:'none',border:'none',cursor:'pointer',color:'#5a6b85',padding:'0 2px',display:'flex',alignItems:'center',fontFamily:'inherit',fontSize:13,fontWeight:600}}>›</button>
+              </div>
+              <button style=${{display:'flex',alignItems:'center',gap:4,background:'none',border:'1px solid #e2e8f0',borderRadius:6,padding:'4px 10px',fontSize:12,color:'#334155',cursor:'pointer',fontFamily:'inherit',fontWeight:500}}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Download
+              </button>
+            </div>
+            <!-- Document area -->
+            <div class="gx-slideout__doc">
+              <div class="gx-slideout__page">
+                <!-- Realistic document placeholder -->
+                <div style=${{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:8}}>
+                  <div>
+                    <div style=${{fontSize:10,fontWeight:700,color:'#94a3b8',letterSpacing:.08,textTransform:'uppercase',marginBottom:4}}>Issued by</div>
+                    <div style=${{fontSize:13,fontWeight:700,color:'#001E4C'}}>DNV GL</div>
+                    <div style=${{fontSize:11.5,color:'#5a6b85'}}>Det Norske Veritas</div>
+                  </div>
+                  <div style=${{width:52,height:52,background:'#f1f5f9',borderRadius:6,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                      <circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                  </div>
+                </div>
+                <div style=${{height:1,background:'#e2e8f0',margin:'4px 0 16px'}}></div>
+                <div style=${{fontSize:15,fontWeight:700,color:'#001E4C',marginBottom:4,lineHeight:1.4}}>${docSlideout.file.replace('.pdf','').replace(/_/g,' ')}</div>
+                <div style=${{fontSize:11.5,color:'#5a6b85',marginBottom:20}}>Certificate No. GS-2026-04-${Math.floor(1000+Math.abs(docSlideout.file.charCodeAt(0)*37)%8999)}</div>
+
+                ${['Vessel Name','IMO Number','Flag State','Gross Tonnage','Classification Society','Valid Until','Date of Issue'].map((label,li) => {
+                  const vals = ['STI Broadway','9876543','Marshall Islands','29,850 GT','DNV GL','18 Apr 2028','22 Apr 2026'];
+                  return x`
+                    <div key=${li} style=${{display:'flex',borderBottom:'1px solid #f1f5f9',padding:'7px 0',alignItems:'baseline',gap:12}}>
+                      <span style=${{flex:'0 0 160px',fontSize:11.5,color:'#94a3b8',fontWeight:500}}>${label}</span>
+                      <span style=${{fontSize:12.5,color:'#001E4C',fontWeight:600}}>${vals[li]}</span>
+                    </div>
+                  `;
+                })}
+
+                <div style=${{marginTop:24,padding:'14px',background:'#f8fafc',borderRadius:6,border:'1px solid #e2e8f0'}}>
+                  <div style=${{fontSize:11,color:'#94a3b8',fontWeight:600,marginBottom:6,textTransform:'uppercase',letterSpacing:.07}}>Remarks</div>
+                  <div style=${{fontSize:12,color:'#334155',lineHeight:1.7}}>
+                    This certificate is issued in accordance with the applicable international conventions and the rules of the classification society. The vessel has been found to comply with the requirements at the time of the survey.
+                  </div>
+                </div>
+
+                <div style=${{marginTop:'auto',paddingTop:32,display:'flex',justifyContent:'space-between',alignItems:'flex-end'}}>
+                  <div>
+                    <div style=${{width:100,height:1,background:'#334155',marginBottom:4}}></div>
+                    <div style=${{fontSize:11,color:'#5a6b85'}}>Authorized Signatory</div>
+                  </div>
+                  <div style=${{width:52,height:52,borderRadius:'50%',background:'#eff4ff',border:'2px solid #c7d7fe',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1852FE" stroke-width="1.5">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ` : null}
+
+      <!-- Upload popup modal -->
+      ${uploadModal ? x`
+        <div onClick=${closeUpload}
+          style=${{position:'fixed',inset:0,background:'rgba(16,23,42,0.45)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center'}}>
+          <div onClick=${e=>e.stopPropagation()}
+            style=${{width:480,maxHeight:'90vh',background:'#fff',display:'flex',flexDirection:'column',
+              borderRadius:12,boxShadow:'0 24px 64px rgba(0,0,0,0.2)',overflow:'hidden'}}>
+            <!-- Modal header -->
+            <div style=${{flexShrink:0,display:'flex',alignItems:'center',justifyContent:'space-between',padding:'16px 20px',borderBottom:'1px solid #f1f5f9'}}>
+              <span style=${{fontWeight:700,fontSize:15,color:'#001E4C'}}>Upload Document</span>
+              <button onClick=${closeUpload} style=${{background:'none',border:'none',cursor:'pointer',color:'#94a3b8',padding:2,display:'flex',alignItems:'center'}}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+            <!-- Source question -->
+            <div style=${{flexShrink:0,padding:'16px 20px 0'}}>
+              <p style=${{fontSize:12,fontWeight:600,color:'#5a6b85',margin:'0 0 6px',textTransform:'uppercase',letterSpacing:.06}}>Source Question</p>
+              <p style=${{fontSize:13.5,fontWeight:500,color:'#001E4C',margin:0,lineHeight:1.5,padding:'10px 12px',background:'#f8fafc',borderRadius:6,border:'1px solid #e2e8f0'}}>${uploadModal.question}</p>
+            </div>
+            <!-- Upload area -->
+            <div style=${{flex:1,overflowY:'auto',padding:'16px 20px',display:'flex',flexDirection:'column',gap:16}}>
+              <div>
+                <p style=${{fontSize:12,fontWeight:600,color:'#5a6b85',margin:'0 0 8px',textTransform:'uppercase',letterSpacing:.06}}>Attachment</p>
+                <div
+                  onDragOver=${e=>{e.preventDefault();setDragging(true);}}
+                  onDragLeave=${()=>setDragging(false)}
+                  onDrop=${e=>{e.preventDefault();setDragging(false);const f=e.dataTransfer.files[0];if(f)setUploadFile(f);}}
+                  style=${{
+                    border:dragging?'2px dashed #1852FE':'2px dashed #c8d5e8',
+                    borderRadius:10,padding:'32px 20px',
+                    display:'flex',flexDirection:'column',alignItems:'center',gap:10,
+                    background:dragging?'#eff4ff':'#fafbfd',
+                    transition:'all .15s',cursor:'pointer',
+                  }}
+                  onClick=${()=>document.getElementById('q88-file-input').click()}
+                >
+                  <div style=${{width:44,height:44,borderRadius:'50%',background:'#eff4ff',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1852FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                  </div>
+                  ${uploadFile ? x`
+                    <span style=${{fontSize:14,fontWeight:600,color:'#1852FE'}}>${uploadFile.name}</span>
+                    <span style=${{fontSize:12,color:'#94a3b8'}}>${(uploadFile.size/1024/1024).toFixed(2)} MB</span>
+                    <span style=${{fontSize:12,color:'#94a3b8',marginTop:2}}>Click to replace</span>
+                  ` : uploadModal && uploadModal.file ? x`
+                    <div style=${{display:'flex',alignItems:'center',gap:8,padding:'6px 12px',background:'#eff4ff',borderRadius:6,border:'1px solid #c7d7fe'}}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1852FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                      </svg>
+                      <span style=${{fontSize:13,fontWeight:600,color:'#1852FE'}}>${uploadModal.file}</span>
+                    </div>
+                    <span style=${{fontSize:12,color:'#94a3b8',marginTop:4}}>Drag & drop or click to replace</span>
+                    <span style=${{fontSize:11.5,color:'#94a3b8'}}>Supported: PDF, DOC, DOCX, JPG, PNG</span>
+                  ` : x`
+                    <span style=${{fontSize:14,fontWeight:600,color:'#334155'}}>Drag & drop file here</span>
+                    <span style=${{fontSize:13,color:'#94a3b8'}}>or</span>
+                    <span style=${{fontSize:13,fontWeight:600,color:'#1852FE',textDecoration:'underline',cursor:'pointer'}}>Browse files</span>
+                    <span style=${{fontSize:11.5,color:'#94a3b8',marginTop:4}}>Supported: PDF, DOC, DOCX, JPG, PNG</span>
+                  `}
+                </div>
+                <input id="q88-file-input" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  style=${{display:'none'}}
+                  onChange=${e=>{const f=e.target.files[0];if(f)setUploadFile(f);}}
+                />
+              </div>
+              <!-- Reason field -->
+              <div>
+                <p style=${{fontSize:12,fontWeight:600,color:'#5a6b85',margin:'0 0 6px',textTransform:'uppercase',letterSpacing:.06}}>Reason</p>
+                <textarea
+                  rows="3"
+                  placeholder="Why is this document being uploaded?"
+                  value=${uploadReason}
+                  onInput=${e=>setUploadReason(e.target.value)}
+                  style=${{width:'100%',boxSizing:'border-box',border:'1.5px solid #e2e8f0',borderRadius:6,padding:'9px 11px',
+                    fontSize:13,fontFamily:'inherit',color:'#334155',resize:'vertical',outline:'none',
+                    background:'#fff',lineHeight:1.5}}
+                ></textarea>
+              </div>
+            </div>
+            <!-- Footer -->
+            <div style=${{flexShrink:0,padding:'14px 20px',borderTop:'1px solid #f1f5f9',display:'flex',gap:10,justifyContent:'flex-end'}}>
+              <button onClick=${closeUpload} style=${{padding:'8px 20px',border:'1.5px solid #e2e8f0',borderRadius:8,
+                background:'#fff',fontSize:13.5,fontWeight:600,color:'#334155',cursor:'pointer',fontFamily:'inherit'}}>
+                Cancel
+              </button>
+              <button onClick=${closeUpload} style=${{padding:'8px 22px',border:'none',borderRadius:8,
+                background:'#001E4C',fontSize:13.5,fontWeight:600,color:'#fff',cursor:'pointer',fontFamily:'inherit'}}>
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      ` : null}
+    </div>
+  `;
+}
+
 /* ── RIGHT-adjacent: Reasoning panel (rich) — Vessel Intelligence Quick View accordion (Figma 7622:30486) ── */
 function ReasoningPanelRich({ task, expanded, onDraftChange }) {
   const readOnly = task.status === 'completed';
@@ -1867,6 +2372,8 @@ function ReasoningPanelRich({ task, expanded, onDraftChange }) {
     const el = chipScrollRef.current;
     if (el) el.scrollBy({ left: dir*160, behavior:'smooth' });
   };
+
+  if (task.quickViewType === 'q88') return x`<${Q88Panel} task=${task}/>`;
 
   const operatorItems = task.operatorSummaryItems || [];
   const otherSections = task.otherSummarySections || [];
@@ -1987,7 +2494,7 @@ function ReasoningPanelRich({ task, expanded, onDraftChange }) {
             ${t}
           </button>`)}
       </div>` : null}
-      ${(!task.summaryTabs || summaryTab===task.summaryTabs[0]) ? x`
+      ${(!task.summaryTabs || summaryTab==='Master Summary') ? x`
       <${Fragment}>
       ${!task.noDataFound && !task.hideQuickAccess ? x`
       <div class=${'gx-chip-scroll-wrap gx-hdr-edge'+(scrolled?' gx-hdr-edge--shadow':'')} onMouseEnter=${()=>setChipHover(true)} onMouseLeave=${()=>setChipHover(false)}
@@ -2062,6 +2569,26 @@ function ReasoningPanelRich({ task, expanded, onDraftChange }) {
         ${!task.noDataFound ? x`
         <div style=${{display:'flex',flexDirection:'column',gap:task.hideQuickAccess?32:8}}>
           ${sections.map(s => {
+            if (s.type === 'documents') {
+              const docs = task.documentsList || [];
+              return x`
+              <div key=${s.key} id=${'gx-qv-section-'+s.key} style=${{border:'1px solid #e2e8f0',borderRadius:8,overflow:'hidden'}}>
+                <div style=${{display:'flex',flexDirection:'column'}}>
+                  ${docs.map((doc, i) => x`
+                    <div key=${i} style=${{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 14px',borderBottom:i<docs.length-1?'1px solid #f1f5f9':'none',background:'#fff'}}>
+                      <div style=${{display:'flex',alignItems:'center',gap:10}}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5a6b85" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        <span style=${{fontSize:14,fontWeight:500,color:'#001E4C'}}>${doc.label}</span>
+                      </div>
+                      <button style=${{background:'none',border:'none',cursor:'pointer',fontSize:13,fontWeight:600,color:'#1852FE',padding:0,fontFamily:'inherit'}}>Upload document</button>
+                    </div>`)}
+                  <button style=${{display:'flex',alignItems:'center',gap:6,background:'none',border:'none',borderTop:'1px dashed #e2e8f0',padding:'11px 14px',cursor:'pointer',fontSize:13,fontWeight:600,color:'#64748b',width:'100%',fontFamily:'inherit',justifyContent:'flex-start'}}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Add more document
+                  </button>
+                </div>
+              </div>`;
+            }
             if (s.procedures) {
               return x`
               <div key=${s.key} id=${'gx-qv-section-'+s.key} style=${{width:'100%'}}>
@@ -2096,7 +2623,7 @@ function ReasoningPanelRich({ task, expanded, onDraftChange }) {
           })}
         </div>` : null}
       </div>
-      </${Fragment}>` : task.summaryTabs && summaryTab===task.summaryTabs[1] ? x`
+      </${Fragment}>` : task.summaryTabs && summaryTab==='Operator Summary' ? x`
       <div class="scroll" style=${{flex:1,overflowY:'auto',padding:16,display:'flex',flexDirection:'column',gap:16}}>
         ${operatorFlaggedCount>0 ? x`
           <div style=${{display:'inline-flex',alignSelf:'flex-start',alignItems:'center',gap:8,padding:'4px'}}>
@@ -2111,7 +2638,7 @@ function ReasoningPanelRich({ task, expanded, onDraftChange }) {
         <div style=${{border:'1px solid #e2e8f0',borderRadius:12,overflow:'hidden'}}>
           ${operatorItems.map((item,i) => x`<${QVItem} key=${i} sectionKey="operatorSummary" index=${i} item=${item} state=${itemState[itemKey('operatorSummary',i)]} onToggleExclude=${onToggleExclude} onOpenEdit=${onOpenEdit} flashing=${flashKey===itemKey('operatorSummary',i)} readOnly=${readOnly}/>`)}
         </div>
-      </div>` : task.summaryTabs && summaryTab===task.summaryTabs[2] ? x`
+      </div>` : task.summaryTabs && summaryTab==='Other Summary' ? x`
       <${Fragment}>
       <div class=${'gx-chip-scroll-wrap gx-hdr-edge'+(scrolled?' gx-hdr-edge--shadow':'')} onMouseEnter=${()=>setChipHover(true)} onMouseLeave=${()=>setChipHover(false)}
         style=${{flexShrink:0,position:'relative',paddingTop:hideOtherQuickAccess?0:12,paddingBottom:hideOtherQuickAccess?0:12,maxHeight:hideOtherQuickAccess?0:60,opacity:hideOtherQuickAccess?0:1,overflow:'hidden',transition:'max-height 220ms ease, opacity 180ms ease, padding 220ms ease'}}>
@@ -2460,7 +2987,7 @@ function ActionsPanelRich({ task, expanded }) {
       </div>
       ${task.positionSummaryData && activeOutputTab==='summary' ? x`
         <div style=${{flexShrink:0,padding:'12px 14px',borderTop:'1px solid #f1f5f9',display:'flex',gap:8}}>
-          <button class="gx-btn-secondary" onClick=${()=>{
+          <button onClick=${()=>{
             const rows = task.positionSummaryData;
             let html = '<html><head><meta charset="UTF-8"></head><body><table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:13px">';
             html += '<tr style="background:#0E1A33;color:#fff;font-weight:700"><th>Field</th><th>Value</th></tr>';
@@ -2474,7 +3001,7 @@ function ActionsPanelRich({ task, expanded }) {
             const a = document.createElement('a');
             a.href = url; a.download = 'Position_Summary.xls'; a.click();
             URL.revokeObjectURL(url);
-          }} style=${{flex:1,height:44,fontSize:13.5,fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center',gap:8,border:'1.5px solid #0E1A33',borderRadius:10,background:'#fff',color:'#0E1A33',cursor:'pointer',fontFamily:'inherit'}}>
+          }} style=${{flex:1,height:44,fontSize:13.5,fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center',gap:8,border:'1.5px solid #1852FE',borderRadius:10,background:'#fff',color:'#1852FE',cursor:'pointer',fontFamily:'inherit'}}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Download
           </button>
