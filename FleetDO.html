@@ -2044,8 +2044,10 @@ function Q88Panel({ task }) {
   const [uploadFile, setUploadFile] = useState(null);
   const [uploadReason, setUploadReason] = useState('');
   const [openSections, setOpenSections] = useState(() => new Set(QUICK_VIEW_SECTIONS.map(s => s.key)));
-  const [docSlideout, setDocSlideout] = useState(null); // { file, question }
-  const [deleteModal, setDeleteModal] = useState(null); // { file, question }
+  const [docSlideout, setDocSlideout] = useState(null);
+  const [deleteModal, setDeleteModal] = useState(null);
+  const [attachOpen, setAttachOpen] = useState(true);
+  const [qaOpen, setQaOpen] = useState(true);
 
   const attachments = task.q88Attachments || [];
 
@@ -2072,10 +2074,12 @@ function Q88Panel({ task }) {
       <div class="scroll" style=${{flex:1,overflowY:'auto',padding:'14px 16px',display:'flex',flexDirection:'column',gap:16}}>
 
         <!-- Section: Attachments -->
-        <div>
-          <div style=${{fontSize:11,fontWeight:700,color:'#94a3b8',letterSpacing:.08,textTransform:'uppercase',marginBottom:8,paddingLeft:2}}>Attachments</div>
-          <div style=${{border:'1px solid #e2e8f0',borderRadius:8,overflow:'hidden',background:'#fff',
-            display:'grid',gridTemplateColumns:'max-content 1px 1fr'}}>
+        <div style=${{border:'1px solid #e2e8f0',borderRadius:8,overflow:'hidden',background:'#fff'}}>
+          <div onClick=${()=>setAttachOpen(o=>!o)} style=${{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'11px 14px',cursor:'pointer',borderBottom:attachOpen?'1px solid #e2e8f0':'none'}}>
+            <span style=${{fontSize:14,fontWeight:600,color:'#001E4C'}}>Attachments</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style=${{transform:attachOpen?'rotate(180deg)':'rotate(0deg)',transition:'transform 150ms'}}><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          ${attachOpen ? x`<div style=${{display:'grid',gridTemplateColumns:'max-content 1px 1fr'}}>
             ${attachments.map((row,i) => {
               const bb = i<attachments.length-1?'1px solid #f1f5f9':'none';
               const bg = hoveredRow===i?'#f8fafc':'#fff';
@@ -2133,13 +2137,16 @@ function Q88Panel({ task }) {
                 </div>`,
               ];
             })}
-          </div>
+          </div>` : null}
         </div>
 
         <!-- Section: Q & A -->
-        <div>
-          <div style=${{fontSize:11,fontWeight:700,color:'#94a3b8',letterSpacing:.08,textTransform:'uppercase',marginBottom:8,paddingLeft:2}}>Q & A</div>
-          <div style=${{display:'flex',flexDirection:'column',gap:8}}>
+        <div style=${{border:'1px solid #e2e8f0',borderRadius:8,overflow:'hidden',background:'#fff'}}>
+          <div onClick=${()=>setQaOpen(o=>!o)} style=${{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'11px 14px',cursor:'pointer',borderBottom:qaOpen?'1px solid #e2e8f0':'none'}}>
+            <span style=${{fontSize:14,fontWeight:600,color:'#001E4C'}}>Q & A</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style=${{transform:qaOpen?'rotate(180deg)':'rotate(0deg)',transition:'transform 150ms'}}><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          ${qaOpen ? x`<div style=${{display:'flex',flexDirection:'column'}}>
             ${[
               { q:'What is the vessel name?',            a:'STI Broadway',              src:'Load Order' },
               { q:'What is the voyage number?',          a:'20260514',                  src:'Load Order' },
@@ -2151,8 +2158,8 @@ function Q88Panel({ task }) {
               { q:'What is the vessel type?',            a:'MR Product Tanker',         src:'Vessel Record' },
               { q:'What is the classification society?', a:'DNV',                       src:'Class Certificate' },
               { q:'When was the last SIRE inspection?',  a:'12 Jan 2026',               src:'SIRE Report' },
-            ].map((qa,i) => x`
-              <div key=${i} style=${{background:'#fff',border:'1px solid #e2e8f0',borderRadius:8,padding:'11px 14px'}}>
+            ].map((qa,i,arr) => x`
+              <div key=${i} style=${{padding:'11px 14px',borderBottom:i<arr.length-1?'1px solid #f1f5f9':'none'}}>
                 <div style=${{display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:8,marginBottom:6}}>
                   <span style=${{fontSize:13,fontWeight:400,color:'#64748B',lineHeight:1.4}}>${qa.q}</span>
                   <span style=${{flexShrink:0,fontSize:11,fontWeight:600,color:'#94a3b8',background:'#f1f5f9',
@@ -2169,7 +2176,7 @@ function Q88Panel({ task }) {
                 </div>
               </div>
             `)}
-          </div>
+          </div>` : null}
         </div>
 
       </div>
