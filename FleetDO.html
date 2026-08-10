@@ -746,7 +746,6 @@ const TANK_CLEANING_QUICK_VIEW = [
     {key:'sulphurPPM',               label:'Sulphur Content (ppm)',                       type:'number'},
     {key:'isDyed',                   label:'Dyed Product',                                type:'toggle'},
     {key:'isBOB',                    label:'Blendstock for Oxygenate Blending (BOB)',      type:'toggle'},
-    {key:'gradeUse',                 label:'Intended Use',                                type:'dropdown', options:['Chemical','Mogas','Other','Feedstock','Diesel Component']},
     {key:'containsFAME',             label:'Contains FAME',                               type:'toggle'},
     {key:'containsAlcohol',          label:'Contains Alcohol',                            type:'toggle'},
     {key:'oxyFree',                  label:'Oxygenate Free',                              type:'toggle'},
@@ -1328,8 +1327,8 @@ function Dropdown({ value, onChange, options, style, placeholder, chevronColor }
     setOpen(o => !o);
   };
   return x`
-    <div style=${{position:'relative',flexShrink:0}}>
-      <button ref=${btnRef} onClick=${toggleOpen} style=${{...style,display:'flex',alignItems:'center',gap:7,position:'relative',textAlign:'left'}}>
+    <div style=${{position:'relative',flexShrink:0,width:style&&style.width?style.width:'auto'}}>
+      <button ref=${btnRef} onClick=${toggleOpen} style=${{...style,width:'100%',display:'flex',alignItems:'center',gap:7,position:'relative',textAlign:'left'}}>
         ${current.color ? x`<span style=${{width:8,height:8,borderRadius:'50%',background:current.color,flexShrink:0}}/>` : null}
         <span style=${{flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>${current ? current.label : placeholder}</span>
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke=${chevronColor||"rgba(255,255,255,0.4)"} stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style=${{flexShrink:0}}><polyline points="6 9 12 15 18 9"/></svg>
@@ -1766,14 +1765,16 @@ function CargoParamsTable({ fields }) {
   });
   const [vals, setVals] = useState(initVals);
   const set = (k, v) => setVals(prev => ({...prev, [k]: v}));
+  const [hoveredRow, setHoveredRow] = useState(null);
 
   return x`
-  <div style=${{border:'1px solid #e2e8f0',borderRadius:8,overflow:'hidden',background:'#fff',
-    display:'grid',gridTemplateColumns:'max-content 1px 1fr'}}>
+  <div style=${{display:'grid',gridTemplateColumns:'1fr 1fr'}}>
     ${fields.map((f, i) => {
       const isLast = i === fields.length - 1;
-      const bdr = isLast ? 'none' : '1px solid #e2e8f0';
+      const bdr = isLast ? 'none' : '1px dashed #e2e8f0';
       const val = vals[f.key];
+      const isHovered = hoveredRow === i;
+      const bg = isHovered ? '#eef6ff' : '#fff';
       let control;
       if (f.type === 'toggle') {
         const isOn = val === 'yes';
@@ -1795,7 +1796,7 @@ function CargoParamsTable({ fields }) {
       } else if (f.type === 'number') {
         control = x`<input type="number" value=${val} onInput=${e=>set(f.key, e.target.value)}
           style=${{border:'1px solid #CBD5E1',borderRadius:4,padding:'4px 8px',fontSize:13,
-            width:120,fontFamily:'inherit',outline:'none',color:'#001E4C'}} placeholder="—"/>`;
+            width:'100%',boxSizing:'border-box',fontFamily:'inherit',outline:'none',color:'#001E4C'}} placeholder="—"/>`;
       } else if (f.type === 'dropdown') {
         const ddOpts = [{id:'', label:'Select…'}, ...f.options.map(o => ({id:o, label:o}))];
         control = x`<${Dropdown}
@@ -1804,11 +1805,11 @@ function CargoParamsTable({ fields }) {
           options=${ddOpts}
           chevronColor="#64748B"
           style=${{
-            height:32, minWidth:120, borderRadius:6,
+            height:32, width:'100%', borderRadius:6,
             border:'1px solid #CBD5E1', background:'#fff',
             color: val ? '#001E4C' : '#94A3B8',
             fontSize:13, fontWeight:400, fontFamily:'inherit',
-            padding:'0 8px', cursor:'pointer',
+            padding:'0 8px', cursor:'pointer', boxSizing:'border-box',
           }}
         />`;
       } else if (f.type === 'badge') {
@@ -1816,10 +1817,16 @@ function CargoParamsTable({ fields }) {
           padding:'3px 10px',fontSize:12,fontWeight:600,color:'#1852FE',display:'inline-flex',alignItems:'center'}}>${f.value}</span>`;
       }
       return [
-        x`<div key=${'l'+i} style=${{padding:'10px 14px',fontSize:13,fontWeight:400,color:'#64748B',
-          borderBottom:bdr,display:'flex',alignItems:'center'}}>${f.label}</div>`,
-        x`<div key=${'s'+i} style=${{background:'#e2e8f0',borderBottom:bdr}}></div>`,
-        x`<div key=${'v'+i} style=${{padding:'8px 14px',borderBottom:bdr,display:'flex',alignItems:'center'}}>${control}</div>`,
+        x`<div key=${'l'+i}
+          onMouseEnter=${()=>setHoveredRow(i)} onMouseLeave=${()=>setHoveredRow(null)}
+          style=${{padding:'10px 14px',fontSize:13,fontWeight:400,color:'#64748B',
+            borderBottom:bdr,display:'flex',alignItems:'center',background:bg,transition:'background .12s'}}>${f.label}</div>`,
+        x`<div key=${'v'+i}
+          onMouseEnter=${()=>setHoveredRow(i)} onMouseLeave=${()=>setHoveredRow(null)}
+          style=${{padding:'8px 14px',borderBottom:bdr,display:'flex',alignItems:'center',
+            background:bg,transition:'background .12s',position:'relative'}}>
+          ${control}
+        </div>`,
       ];
     })}
   </div>`;
@@ -2039,6 +2046,7 @@ function QVItem({ sectionKey, index, item, state, onToggleExclude, onOpenEdit, f
 /* ── Q88 Reasoning Panel ── */
 function Q88Panel({ task }) {
   const [hoveredRow, setHoveredRow] = useState(null);
+  const [hoveredQa, setHoveredQa] = useState(null);
   const [uploadModal, setUploadModal] = useState(null);
   const [dragging, setDragging] = useState(false);
   const [uploadFile, setUploadFile] = useState(null);
@@ -2071,15 +2079,14 @@ function Q88Panel({ task }) {
       </div>
 
       <!-- Content: flat scroll — Attachments then Q & A -->
-      <div class="scroll" style=${{flex:1,overflowY:'auto',padding:'14px 16px',display:'flex',flexDirection:'column',gap:16}}>
+      <div style=${{padding:'14px 16px',display:'flex',flexDirection:'column',gap:16}}>
 
         <!-- Section: Attachments -->
         <div style=${{border:'1px solid #e2e8f0',borderRadius:8,overflow:'hidden',background:'#fff'}}>
-          <div onClick=${()=>setAttachOpen(o=>!o)} style=${{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'11px 14px',cursor:'pointer',borderBottom:attachOpen?'1px solid #e2e8f0':'none'}}>
+          <div style=${{display:'flex',alignItems:'center',padding:'11px 14px',borderBottom:'none'}}>
             <span style=${{fontSize:14,fontWeight:600,color:'#001E4C'}}>Attachments</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style=${{transform:attachOpen?'rotate(180deg)':'rotate(0deg)',transition:'transform 150ms'}}><polyline points="6 9 12 15 18 9"/></svg>
           </div>
-          ${attachOpen ? x`<div style=${{display:'grid',gridTemplateColumns:'max-content 1px 1fr'}}>
+          <div style=${{display:'grid',gridTemplateColumns:'max-content 1fr'}}>
             ${attachments.map((row,i) => {
               const bb = i<attachments.length-1?'1px solid #f1f5f9':'none';
               const bg = hoveredRow===i?'#f8fafc':'#fff';
@@ -2089,9 +2096,6 @@ function Q88Panel({ task }) {
                   style=${{padding:'11px 14px',background:bg,transition:'background .12s',borderBottom:bb,display:'flex',alignItems:'center'}}>
                   <span style=${{fontSize:13,color:'#64748B',fontWeight:400,whiteSpace:'nowrap'}}>${row.question}</span>
                 </div>`,
-                x`<div key=${'sep'+i}
-                  onMouseEnter=${()=>setHoveredRow(i)} onMouseLeave=${()=>setHoveredRow(null)}
-                  style=${{background:'#e2e8f0',borderBottom:bb}}></div>`,
                 x`<div key=${'r'+i}
                   onMouseEnter=${()=>setHoveredRow(i)} onMouseLeave=${()=>setHoveredRow(null)}
                   style=${{padding:'11px 14px',background:bg,transition:'background .12s',borderBottom:bb,
@@ -2137,12 +2141,12 @@ function Q88Panel({ task }) {
                 </div>`,
               ];
             })}
-          </div>` : null}
+          </div>
         </div>
 
         <!-- Section: Q & A -->
         <div style=${{border:'1px solid #e2e8f0',borderRadius:8,overflow:'hidden',background:'#fff'}}>
-          <div onClick=${()=>setQaOpen(o=>!o)} style=${{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'11px 14px',cursor:'pointer',borderBottom:qaOpen?'1px solid #e2e8f0':'none'}}>
+          <div onClick=${()=>setQaOpen(o=>!o)} style=${{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'11px 14px',cursor:'pointer',borderBottom:'none'}}>
             <span style=${{fontSize:14,fontWeight:600,color:'#001E4C'}}>Q & A</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style=${{transform:qaOpen?'rotate(180deg)':'rotate(0deg)',transition:'transform 150ms'}}><polyline points="6 9 12 15 18 9"/></svg>
           </div>
@@ -2159,7 +2163,10 @@ function Q88Panel({ task }) {
               { q:'What is the classification society?', a:'DNV',                       src:'Class Certificate' },
               { q:'When was the last SIRE inspection?',  a:'12 Jan 2026',               src:'SIRE Report' },
             ].map((qa,i,arr) => x`
-              <div key=${i} style=${{padding:'11px 14px',borderBottom:i<arr.length-1?'1px solid #f1f5f9':'none'}}>
+              <div key=${i}
+                onMouseEnter=${()=>setHoveredQa(i)} onMouseLeave=${()=>setHoveredQa(null)}
+                style=${{padding:'11px 14px',borderBottom:i<arr.length-1?'1px solid #f1f5f9':'none',
+                  background:hoveredQa===i?'#f8fafc':'#fff',transition:'background .12s',position:'relative'}}>
                 <div style=${{display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:8,marginBottom:6}}>
                   <span style=${{fontSize:13,fontWeight:400,color:'#64748B',lineHeight:1.4}}>${qa.q}</span>
                   <span style=${{flexShrink:0,fontSize:11,fontWeight:600,color:'#94a3b8',background:'#f1f5f9',
@@ -2173,6 +2180,17 @@ function Q88Panel({ task }) {
                     </svg>
                   ` : null}
                   <span style=${{fontSize:13,fontWeight:500,color:qa.warn?'#ea580c':'#001E4C'}}>${qa.a}</span>
+                </div>
+                <div style=${{position:'absolute',right:14,top:'50%',transform:'translateY(-50%)',
+                  display:'flex',gap:6,opacity:hoveredQa===i?1:0,pointerEvents:hoveredQa===i?'auto':'none',transition:'opacity .15s'}}>
+                  <button style=${{display:'flex',alignItems:'center',gap:3,background:'#f1f5f9',border:'none',
+                    borderRadius:6,padding:'3px 8px',fontSize:12,color:'#334155',cursor:'pointer',fontFamily:'inherit',fontWeight:500}}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    Edit
+                  </button>
                 </div>
               </div>
             `)}
@@ -2684,10 +2702,14 @@ function ReasoningPanelRich({ task, expanded, onDraftChange }) {
               </div>`;
             }
             if (s.type === 'cargoParams') {
+              const cpOpen = open.has(s.key);
               return x`
-              <div key=${s.key} id=${'gx-qv-section-'+s.key} style=${{width:'100%',display:'flex',flexDirection:'column',gap:12}}>
-                <div style=${{fontSize:18,lineHeight:'24px',fontWeight:600,color:'#000'}}>Title name needed here</div>
-                <${CargoParamsTable} fields=${s.fields}/>
+              <div key=${s.key} id=${'gx-qv-section-'+s.key} style=${{border:'1px solid #e2e8f0',borderRadius:8,overflow:'hidden',background:'#fff'}}>
+                <button class="gx-accordion-header" onClick=${()=>toggleSection(s.key)}>
+                  <span style=${{flex:1,fontSize:14,lineHeight:'20px',fontWeight:600,color:'#001E4C',textAlign:'left'}}>Cargo Details</span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5a6b85" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style=${{transform:cpOpen?'rotate(180deg)':'rotate(0deg)',transition:'transform 150ms',flexShrink:0}}><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                ${cpOpen ? x`<${CargoParamsTable} fields=${s.fields}/>` : null}
               </div>`;
             }
             if (s.procedures) {
