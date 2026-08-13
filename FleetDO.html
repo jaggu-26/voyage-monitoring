@@ -739,22 +739,6 @@ Disclaimer: The information contained in this e-mail and any attachment is consi
 /* ── Tank Cleaning Agent "Quick View" accordion data — Cargo + Guide Lookup & Procedures ── */
 const TANK_CLEANING_QUICK_VIEW = [
   { key:'determination', type:'determination', label:'Determination Result', items:[] },
-  { key:'cargoParams', type:'cargoParams', items:[], fields:[
-    {key:'sulphurPPM',               label:'Sulphur Content (ppm)',                       type:'number'},
-    {key:'isDyed',                   label:'Dyed Product',                                type:'toggle'},
-    {key:'isBOB',                    label:'Blendstock for Oxygenate Blending (BOB)',      type:'toggle'},
-    {key:'containsFAME',             label:'Contains FAME',                               type:'toggle'},
-    {key:'containsAlcohol',          label:'Contains Alcohol',                            type:'toggle'},
-    {key:'oxyFree',                  label:'Oxygenate Free',                              type:'toggle'},
-    {key:'fameFree',                 label:'FAME Free',                                   type:'toggle'},
-    {key:'aromaticsSulphurSensitive',label:'Aromatics / Sulphur Sensitive',               type:'toggle'},
-    {key:'mtbeNotPermitted',         label:'MTBE Not Permitted',                          type:'toggle'},
-    {key:'alcoholDirection',         label:'Alcohol Change Direction',                    type:'badge', value:'MeOH→EtOH'},
-    {key:'hasBuffer',                label:'Buffer Cargo Available',                      type:'toggle'},
-    {key:'hasIGS',                   label:'Inert Gas System (IGS) Available',            type:'toggle'},
-    {key:'isMPP',                    label:'Multi-Purpose Product (MPP) Vessel',          type:'toggle'},
-    {key:'coatingsGood',             label:'Tank Coatings in Good Condition',             type:'toggle'},
-  ]},
 ];
 
 /* ── Vessel Intelligence "Quick View" accordion data (Figma 7622:30486) — extracted from the Q88 questionnaire ── */
@@ -2492,7 +2476,7 @@ function EditCargoModal({ type, cargos, onClose }) {
             <span style=${{fontSize:17,fontWeight:700,color:'#0E1A33'}}>${title}</span>
             <div style=${{display:'flex',alignItems:'center',gap:10}}>
               <button onClick=${addEntry}
-                style=${{display:'flex',alignItems:'center',gap:5,background:'none',border:'none',padding:0,cursor:'pointer',fontSize:13,fontWeight:600,color:'#1852FE',fontFamily:'inherit',whiteSpace:'nowrap',textDecoration:'underline',textUnderlineOffset:3}}>
+                style=${{display:'flex',alignItems:'center',gap:5,background:'none',border:'none',padding:0,cursor:'pointer',fontSize:13,fontWeight:600,color:'#1852FE',fontFamily:'inherit',whiteSpace:'nowrap'}}>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 ${addLabel}
               </button>
