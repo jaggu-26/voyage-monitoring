@@ -2442,8 +2442,7 @@ function Q88Panel({ task }) {
 
 /* ── Edit Cargo Modal (Tank Cleaning determination) ── */
 function EditCargoModal({ type, cargos, onClose, mode }) {
-  const isAdd = mode === 'add';
-  const title = isAdd ? 'Add new cargo' : (type === 'next' ? 'Edit Next Cargo' : 'Edit Previous Cargo');
+  const editTitle = type === 'next' ? 'Edit Next Cargo' : 'Edit Previous Cargo';
   const entryLabel = type === 'next' ? 'Next Cargo' : 'Previous Cargo';
   const FIELDS = [
     { key:'intendedUse',               label:'Intended Use',                  type:'select', opts:['Heating','Transport','Blending','Export'] },
@@ -2456,14 +2455,19 @@ function EditCargoModal({ type, cargos, onClose, mode }) {
     { key:'hasBuffer',                 label:'Has Buffer',                    type:'toggle' },
   ];
   const initEntry = name => ({ name, intendedUse:'', containsFAME:false, containsAlcohol:false, fameFree:false, aromaticsSulphurSensitive:false, mtbeNotPermitted:false, alcoholDirection:'', hasBuffer:false });
+  const [internalMode, setInternalMode] = useState(mode === 'add' ? 'add' : 'edit');
+  const isAdd = internalMode === 'add';
+  const title = isAdd ? 'Add new cargo' : editTitle;
   const [entries, setEntries] = useState(() => cargos.map(initEntry));
+  const [addEntries, setAddEntries] = useState(() => [initEntry('')]);
   const [activeTab, setActiveTab] = useState(0);
-  const setField = (i, key, val) => setEntries(prev => prev.map((e, idx) => idx===i ? {...e, [key]:val} : e));
-  const addEntry = () => {
-    setEntries(prev => [...prev, initEntry('')]);
-    setActiveTab(entries.length);
+  const setField = (i, key, val) => {
+    if (isAdd) setAddEntries(prev => prev.map((e, idx) => idx===i ? {...e, [key]:val} : e));
+    else setEntries(prev => prev.map((e, idx) => idx===i ? {...e, [key]:val} : e));
   };
-  const entry = entries[activeTab] || entries[0];
+  const currentEntries = isAdd ? addEntries : entries;
+  const switchToAdd = () => { setInternalMode('add'); setAddEntries([initEntry('')]); setActiveTab(0); };
+  const entry = currentEntries[activeTab] || currentEntries[0];
   const i = activeTab;
 
   return x`
@@ -2477,19 +2481,32 @@ function EditCargoModal({ type, cargos, onClose, mode }) {
         <!-- Header — DS: modal__header -->
         <div style=${{padding:'20px 24px 0',flexShrink:0,background:'#fff',borderRadius:'16px 16px 0 0'}}>
           <div style=${{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:14}}>
-            <!-- DS: modal__title — font-size 16px, weight 600, color #030712 -->
             <span style=${{fontSize:16,fontWeight:600,color:'#030712',fontFamily:'inherit'}}>${title}</span>
-            <!-- DS: modal__close — color-text-secondary -->
-            <button onClick=${onClose}
-              style=${{background:'none',border:'none',cursor:'pointer',padding:4,display:'inline-flex',alignItems:'center',
-                color:'#334154',borderRadius:4}}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
+            <div style=${{display:'flex',alignItems:'center',gap:12}}>
+              ${!isAdd ? x`
+                <button onClick=${switchToAdd}
+                  style=${{background:'none',border:'none',padding:0,cursor:'pointer',display:'flex',alignItems:'center',gap:4,
+                    fontSize:13,fontWeight:600,color:'#1852FE',fontFamily:'inherit',whiteSpace:'nowrap'}}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1852FE" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Add new cargo
+                </button>` : x`
+                <button onClick=${()=>{ setInternalMode('edit'); setActiveTab(0); }}
+                  style=${{background:'none',border:'none',padding:0,cursor:'pointer',display:'flex',alignItems:'center',gap:4,
+                    fontSize:13,fontWeight:600,color:'#1852FE',fontFamily:'inherit',whiteSpace:'nowrap'}}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1852FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                  Edit ${type === 'next' ? 'next' : 'previous'} cargos
+                </button>`}
+              <button onClick=${onClose}
+                style=${{background:'none',border:'none',cursor:'pointer',padding:4,display:'inline-flex',alignItems:'center',
+                  color:'#334154',borderRadius:4}}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
           </div>
           <!-- Tabs — negative margin so grey line runs edge-to-edge -->
           <div style=${{position:'relative',margin:'0 -24px'}}>
             <div style=${{display:'flex',overflowX:'auto',padding:'0 24px'}}>
-              ${entries.map((_, ti) => x`
+              ${currentEntries.map((_, ti) => x`
                 <button key=${ti} onClick=${()=>setActiveTab(ti)}
                   style=${{flexShrink:0,padding:'6px 20px 10px',fontSize:14,fontWeight:600,border:'none',cursor:'pointer',fontFamily:'inherit',background:'transparent',
                     color:ti===activeTab?'#1852FE':'#64748b',
