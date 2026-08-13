@@ -2468,68 +2468,110 @@ function EditCargoModal({ type, cargos, onClose }) {
 
   return x`
     <div onClick=${e=>{ if(e.target===e.currentTarget) onClose(); }}
-      style=${{position:'fixed',inset:0,background:'rgba(14,26,51,0.45)',zIndex:1200,display:'flex',alignItems:'center',justifyContent:'center',padding:24}}>
-      <div style=${{background:'#F8FAFC',borderRadius:16,width:'100%',maxWidth:500,maxHeight:'85vh',display:'flex',flexDirection:'column',boxShadow:'0 20px 60px rgba(14,26,51,0.22)'}}>
-        <!-- Header -->
-        <div style=${{padding:'20px 24px 16px',background:'#fff',borderRadius:'16px 16px 0 0',flexShrink:0}}>
+      style=${{position:'fixed',inset:0,zIndex:1200,display:'flex',alignItems:'center',justifyContent:'center',padding:16,
+        background:'rgba(3,7,18,0.5)',backdropFilter:'blur(2px)'}}>
+      <!-- Modal panel — DS: modal--md, radius-xl, shadow-modal -->
+      <div style=${{background:'#ffffff',borderRadius:16,width:'100%',maxWidth:500,maxHeight:'calc(100vh - 64px)',display:'flex',flexDirection:'column',
+        boxShadow:'0 8px 32px rgba(0,0,0,0.14)',outline:'none'}}>
+
+        <!-- Header — DS: modal__header -->
+        <div style=${{padding:'20px 24px 0',flexShrink:0,background:'#fff',borderRadius:'16px 16px 0 0'}}>
           <div style=${{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:14}}>
-            <span style=${{fontSize:17,fontWeight:700,color:'#0E1A33'}}>${title}</span>
-            <div style=${{display:'flex',alignItems:'center',gap:10}}>
+            <!-- DS: modal__title — font-size 16px, weight 600, color #030712 -->
+            <span style=${{fontSize:16,fontWeight:600,color:'#030712',fontFamily:'inherit'}}>${title}</span>
+            <div style=${{display:'flex',alignItems:'center',gap:12}}>
+              <!-- DS: tertiary / link button — no border, brand colour -->
               <button onClick=${addEntry}
-                style=${{display:'flex',alignItems:'center',gap:5,background:'none',border:'none',padding:0,cursor:'pointer',fontSize:13,fontWeight:600,color:'#1852FE',fontFamily:'inherit',whiteSpace:'nowrap'}}>
+                style=${{display:'flex',alignItems:'center',gap:4,background:'none',border:'none',padding:0,cursor:'pointer',
+                  fontSize:14,fontWeight:600,color:'#1852FE',fontFamily:'inherit',whiteSpace:'nowrap'}}>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 ${addLabel}
               </button>
-              <button onClick=${onClose} style=${{background:'none',border:'none',cursor:'pointer',padding:4,display:'flex',alignItems:'center',color:'#64748B',borderRadius:4}}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              <!-- DS: modal__close — color-text-secondary, hover surface-subtle -->
+              <button onClick=${onClose}
+                style=${{background:'none',border:'none',cursor:'pointer',padding:4,display:'inline-flex',alignItems:'center',
+                  color:'#334154',borderRadius:4}}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
             </div>
           </div>
-          <!-- Tabs -->
-          <div style=${{position:'relative'}}>
-            <div style=${{display:'flex',gap:0,overflowX:'auto'}}>
+          <!-- Tabs — negative margin so grey line runs edge-to-edge -->
+          <div style=${{position:'relative',margin:'0 -24px'}}>
+            <div style=${{display:'flex',overflowX:'auto',padding:'0 24px'}}>
               ${entries.map((_, ti) => x`
                 <button key=${ti} onClick=${()=>setActiveTab(ti)}
                   style=${{flexShrink:0,padding:'6px 20px 10px',fontSize:14,fontWeight:600,border:'none',cursor:'pointer',fontFamily:'inherit',background:'transparent',
-                    color:ti===activeTab?'#1852FE':'#64748B',
+                    color:ti===activeTab?'#1852FE':'#64748b',
                     borderBottom:ti===activeTab?'2.5px solid #1852FE':'2.5px solid transparent',
                     transition:'color .15s,border-color .15s'}}>
                   ${entryLabel} ${ti+1}
                 </button>`)}
             </div>
-            <div style=${{position:'absolute',bottom:0,left:0,right:0,height:'1px',background:'#E2E8F0'}}></div>
+            <div style=${{position:'absolute',bottom:0,left:0,right:0,height:'1px',background:'#e2e8f0'}}></div>
           </div>
         </div>
-        <!-- Tab content -->
-        <div class="scroll" style=${{flex:1,overflowY:'auto',padding:'20px 24px 24px'}}>
-          <div style=${{display:'flex',alignItems:'center',gap:8,border:'1px solid #CBD5E1',borderRadius:8,padding:'8px 12px',marginBottom:4,background:'#fff'}}>
+
+        <!-- Body — DS: modal__body (padding 24px, overflow-y auto) -->
+        <div class="scroll" style=${{flex:1,overflowY:'auto',padding:24}}>
+          <!-- Input field — DS: input-field, height 40px, radius 4px, border #cbd5e1, focus border #2463eb -->
+          <div style=${{display:'flex',alignItems:'center',height:40,gap:8,
+            border:'1px solid #cbd5e1',borderRadius:4,padding:'0 12px',marginBottom:16,
+            background:'#ffffff',transition:'border-color 120ms ease'}}
+            onFocusIn=${e=>e.currentTarget.style.borderColor='#2463eb'}
+            onFocusOut=${e=>e.currentTarget.style.borderColor='#cbd5e1'}>
             <input value=${entry.name} onInput=${e=>setField(i,'name',e.target.value)}
-              style=${{flex:1,fontSize:14,color:'#0E1A33',background:'transparent',border:'none',outline:'none',fontFamily:'inherit'}}/>
-            <button onClick=${()=>setField(i,'name','')} style=${{background:'none',border:'none',cursor:'pointer',padding:0,display:'flex',color:'#94A3B8'}}>
+              placeholder="Cargo name"
+              style=${{flex:1,fontSize:14,color:'#030712',background:'transparent',border:'none',outline:'none',fontFamily:'inherit'}}/>
+            <button onClick=${()=>setField(i,'name','')}
+              style=${{background:'none',border:'none',cursor:'pointer',padding:0,display:'flex',color:'#64748b'}}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
+
+          <!-- Fields -->
           ${FIELDS.map((f) => x`
-            <div key=${f.key} style=${{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 0',borderBottom:'1px dashed #e2e8f0'}}>
-              <span style=${{fontSize:13.5,color:'#94A3B8'}}>${f.label}</span>
+            <div key=${f.key} style=${{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 0'}}>
+              <!-- DS: color-text-default (#030712) at 14px -->
+              <span style=${{fontSize:14,color:'#030712',fontFamily:'inherit'}}>${f.label}</span>
               ${f.type==='toggle' ? x`
                 <label style=${{position:'relative',display:'inline-flex',cursor:'pointer',flexShrink:0}}>
                   <input type="checkbox" checked=${entry[f.key]} onChange=${e=>setField(i,f.key,e.target.checked)} style=${{opacity:0,position:'absolute',width:0,height:0}}/>
-                  <div style=${{width:44,height:24,borderRadius:12,background:entry[f.key]?'#1852FE':'#CBD5E1',transition:'background .2s',position:'relative',flexShrink:0}}>
-                    <div style=${{position:'absolute',top:2,left:entry[f.key]?'20px':'2px',width:20,height:20,borderRadius:'50%',background:'#fff',transition:'left .2s',boxShadow:'0 1px 3px rgba(0,0,0,.15)'}}></div>
+                  <div style=${{width:44,height:24,borderRadius:12,background:entry[f.key]?'#1852FE':'#cbd5e1',transition:'background .2s',position:'relative',flexShrink:0}}>
+                    <div style=${{position:'absolute',top:2,left:entry[f.key]?'20px':'2px',width:20,height:20,borderRadius:'50%',background:'#fff',transition:'left .2s',boxShadow:'0 1px 2px rgba(0,0,0,.12)'}}></div>
                   </div>
                 </label>` : x`
+                <!-- DS: dropdown__trigger — height 40px, radius 4px, border #cbd5e1, focus brand blue -->
                 <select value=${entry[f.key]} onChange=${e=>setField(i,f.key,e.target.value)}
-                  style=${{fontSize:13.5,color:entry[f.key]?'#0E1A33':'#94A3B8',border:'1px solid #CBD5E1',borderRadius:8,padding:'7px 32px 7px 10px',background:'#fff',outline:'none',cursor:'pointer',fontFamily:'inherit',minWidth:160}}>
+                  style=${{height:40,fontSize:14,
+                    color:entry[f.key]?'#030712':'#64748b',
+                    border:'1px solid #cbd5e1',borderRadius:4,
+                    padding:'0 32px 0 12px',background:'#ffffff',
+                    outline:'none',cursor:'pointer',fontFamily:'inherit',minWidth:160,
+                    appearance:'none',
+                    backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`,
+                    backgroundRepeat:'no-repeat',backgroundPosition:'right 8px center'}}>
                   <option value="">Select...</option>
                   ${f.opts.map(o => x`<option key=${o} value=${o}>${o}</option>`)}
                 </select>`}
             </div>`)}
         </div>
-        <!-- Footer -->
-        <div style=${{flexShrink:0,padding:'16px 24px',borderTop:'1px solid #e2e8f0',display:'flex',gap:12,background:'#fff',borderRadius:'0 0 16px 16px'}}>
-          <button onClick=${onClose} style=${{flex:1,height:44,fontSize:14,fontWeight:700,border:'1.5px solid #1852FE',borderRadius:10,background:'#fff',color:'#1852FE',cursor:'pointer',fontFamily:'inherit'}}>Cancel</button>
-          <button onClick=${onClose} class="gx-btn-primary" style=${{flex:2,height:44,fontSize:14,fontWeight:700}}>Save changes & re-run</button>
+
+        <!-- Footer — DS: modal__footer (padding 16px 24px, border-top, surface-subtle bg, radius 0 0 xl xl) -->
+        <div style=${{flexShrink:0,padding:'16px 24px',borderTop:'1px solid #e2e8f0',
+          display:'flex',justifyContent:'flex-end',gap:12,
+          background:'#f7fafc',borderRadius:'0 0 16px 16px'}}>
+          <!-- DS: modal__confirm-btn--cancel — bg #edf5ff, brand border + text -->
+          <button onClick=${onClose}
+            style=${{flex:1,height:40,fontSize:14,fontWeight:600,fontFamily:'inherit',cursor:'pointer',
+              background:'#edf5ff',border:'1px solid #1852FE',borderRadius:4,color:'#1852FE'}}>
+            Cancel
+          </button>
+          <!-- DS: modal__confirm-btn--primary — brand bg, white text -->
+          <button onClick=${onClose}
+            style=${{flex:2,height:40,fontSize:14,fontWeight:600,fontFamily:'inherit',cursor:'pointer',
+              background:'#1852FE',border:'none',borderRadius:4,color:'#ffffff'}}>
+            Save changes & re-run
+          </button>
         </div>
       </div>
     </div>`;
